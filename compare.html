@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/style.css"></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
-<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/roles/">Roles</a>
+<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
 <a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
 <div class="wrap" id="main"><div class="card"><h1>Compare</h1>
 <p>Side-by-side H-1B pay comparisons — employers, roles, cities, states — plus an offer checker
@@ -123,7 +123,8 @@ document.getElementById('o-go').addEventListener('click',()=>{
   if(!rk||!sk||!(w>0)){document.getElementById('o-res').innerHTML='<p>Enter a valid offer amount.</p>';return;}
   let loads=[load('role'),load('state'),load('emp')];
   if(ek)loads.push(fetch('/data/compare-emp-role.json').then(r=>r.json()).catch(()=>null));
-  Promise.all(loads).then(([R,St,E,ER])=>{
+  loads.push(fetch('/data/compare-pw.json').then(r=>r.json()).catch(()=>null));
+  Promise.all(loads).then(([R,St,E,ER,PW])=>{
     let r=R[rk],s=St[sk],pr=pctile(r,w),ps=pctile(s,w);
     let verdict=pr>=75?'a strong offer — above most certified filings':pr>=50?'around the middle of the pack':pr>=25?'below average for this role':'low — most filings pay more';
     let companyHtml='';
@@ -140,9 +141,22 @@ document.getElementById('o-go').addEventListener('click',()=>{
         of all their H-1B filings (too few ${r.n} filings for a role-specific read).</p>`;
       }
     }
+    let pwHtml='';
+    if(PW){
+      let pairPw=(ek&&PW.emp_role[ek+'|'+rk])||null;
+      let pw=pairPw||PW.roles[rk];
+      if(pw){
+        let gap=(w-pw)/pw*100;
+        let band=gap>=5?'Above prevailing wage':gap<=-5?'Below prevailing wage':'Around prevailing wage';
+        let scope=pairPw?`at ${E[ek].n} for this role`:'for this role nationally';
+        pwHtml=`<p>Against the median prevailing wage ${scope} (${fmt(pw)}), your offer is
+        <b>${gap>=0?'+':''}${gap.toFixed(0)}%</b> — ${band}. Prevailing-wage medians mix job
+        levels and locations, so this compares medians, not your specific case requirement.</p>`;
+      }
+    }
     document.getElementById('o-res').innerHTML=`<h2>${fmt(w)}</h2>
     <p>For <b>${r.n}</b> in <b>${s.n}</b>, that's the <b>${pr}th percentile</b> nationally for the role
-    and the <b>${ps}th percentile</b> for the state — ${verdict}.</p>${companyHtml}
+    and the <b>${ps}th percentile</b> for the state — ${verdict}.</p>${companyHtml}${pwHtml}
     <div class="stats"><div class="stat"><div class="v">${fmt(r.p25)}</div><div class="l">Role 25th</div></div>
     <div class="stat"><div class="v">${fmt(r.p50)}</div><div class="l">Role median</div></div>
     <div class="stat"><div class="v">${fmt(r.p75)}</div><div class="l">Role 75th</div></div></div>
