@@ -1,7 +1,7 @@
 # H1B Salary Database — website
 
 Static site: H-1B and PERM salary data from U.S. DOL OFLC public disclosure files
-(FY2023–FY2026). Live at https://salaries.clearinfohub.com
+(FY2023–FY2026). Live at https://h1bsalary.clearinfohub.com
 
 - 1,920,736 certified H-1B filings · 121,549 employers
 - 464,379 PERM decisions · 77,632 employers
