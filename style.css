@@ -61,6 +61,17 @@ background:linear-gradient(90deg,#0ea5e9,var(--accent))}
 .note{font-size:14px;color:var(--text2);background:var(--well);border:1px solid var(--hairline);
 border-radius:12px;padding:1rem 1.2rem;margin:1.2rem 0}
 footer{color:var(--text2);font-size:12px;text-align:center;padding:2rem 1rem;max-width:1024px;margin:0 auto}
+.disc-banner{position:fixed;left:0;right:0;bottom:0;z-index:90;background:var(--card);
+color:var(--text2);border-top:1px solid var(--hairline);box-shadow:0 -4px 16px rgba(0,0,0,.08);
+font-size:13px;line-height:1.45;padding:.6rem 1rem;display:flex;gap:.8rem;align-items:center;
+justify-content:center}
+.disc-banner p{margin:0;max-width:920px}
+.disc-banner a{color:var(--link);white-space:nowrap}
+.disc-banner button{background:none;border:1px solid var(--hairline);color:var(--text2);
+border-radius:50%;width:26px;height:26px;min-width:26px;line-height:1;font-size:17px;cursor:pointer;
+padding:0}
+.disc-banner button:hover{color:var(--text);border-color:var(--text2)}
+@media(max-width:700px){.disc-banner{font-size:12px;padding:.55rem .8rem}}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem}
 .trend{width:100%;height:auto;background:var(--well);border:1px solid var(--hairline);
 border-radius:12px;margin:.6rem 0}
