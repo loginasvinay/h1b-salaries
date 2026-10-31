@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compare H-1B Pay — Employers, Roles, Cities, States + Offer Checker</title><meta name="description" content="Compare H-1B pay side by side: employers, roles, cities, states. Check where any salary offer lands.">
+<meta property="og:title" content="Compare H-1B Pay — Employers, Roles, Cities, States + Offer Checker">
+<meta property="og:description" content="Compare H-1B pay side by side: employers, roles, cities, states. Check where any salary offer lands.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="/style.css"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
+<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/roles/">Roles</a>
+<a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
+<div class="wrap" id="main"><div class="card"><h1>Compare</h1>
+<p>Side-by-side H-1B pay comparisons — employers, roles, cities, states — plus an offer checker
+that tells you where any salary lands.</p>
+<div class="tabs" id="tabs">
+<button class="tab active" data-tab="emp">Employers</button>
+<button class="tab" data-tab="role">Roles</button>
+<button class="tab" data-tab="city">Cities</button>
+<button class="tab" data-tab="state">States</button>
+<button class="tab" data-tab="offer">Check my offer</button>
+</div>
+<div class="tabpane" id="pane-emp"><div class="cmp-grid">
+<div><select class="compare" id="a" aria-label="First employer to compare"></select><div id="ra"></div></div>
+<div><select class="compare" id="b" aria-label="Second employer to compare"></select><div id="rb"></div></div></div></div>
+<div class="tabpane" id="pane-role" style="display:none"><div class="cmp-grid">
+<div><select class="compare" id="a2" aria-label="First role to compare"></select><div id="ra2"></div></div>
+<div><select class="compare" id="b2" aria-label="Second role to compare"></select><div id="rb2"></div></div></div></div>
+<div class="tabpane" id="pane-city" style="display:none"><div class="cmp-grid">
+<div><select class="compare" id="a3" aria-label="First city to compare"></select><div id="ra3"></div></div>
+<div><select class="compare" id="b3" aria-label="Second city to compare"></select><div id="rb3"></div></div></div></div>
+<div class="tabpane" id="pane-state" style="display:none"><div class="cmp-grid">
+<div><select class="compare" id="a4" aria-label="First state to compare"></select><div id="ra4"></div></div>
+<div><select class="compare" id="b4" aria-label="Second state to compare"></select><div id="rb4"></div></div></div></div>
+<div class="tabpane" id="pane-offer" style="display:none">
+<p>Pick a role, a state, and optionally a company — enter an annual offer, and see which
+percentile it falls into across all certified H-1B filings.</p>
+<div class="cmp-grid"><div>
+<select class="compare" id="o-role" aria-label="Role for offer check"></select>
+<select class="compare" id="o-state" aria-label="State for offer check"></select>
+<select class="compare" id="o-emp" aria-label="Company for offer check, optional"></select>
+<input class="search" id="o-wage" type="number" aria-label="Annual offer amount in US dollars" placeholder="Annual offer, e.g. 150000" style="margin-bottom:1rem">
+<button class="btn" id="o-go">Check my offer</button>
+</div><div id="o-res"></div></div></div>
+</div>
+<script>
+const FILES={emp:'/data/compare.json',role:'/data/compare-roles.json',city:'/data/compare-cities.json',state:'/data/compare-states.json'};
+const LINKS={emp:'/employer/',role:'/role/',city:'/city/',state:'/state/'};
+const SUFFIX={emp:'.html',role:'.html',city:'.html',state:'.html'};
+const cache={};
+function fmt(v){return '$'+Math.round(v).toLocaleString();}
+function card(e,tab){
+  let t=e.t.slice(-12);
+  let inner='';
+  if(t.length>1){
+    let W=420,H=150,P=26, vs=t.map(p=>p[1]), lo=Math.min(...vs), hi=Math.max(...vs), sp=(hi-lo)||1;
+    let X=i=>P+i*(W-2*P)/Math.max(t.length-1,1), Y=v=>H-P-(v-lo)/sp*(H-2*P);
+    let line=t.map((p,i)=>X(i).toFixed(1)+','+Y(p[1]).toFixed(1)).join(' ');
+    inner=`<svg class="trend" viewBox="0 0 ${W} ${H}"><polyline points="${line}" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>
+    <text x="${P}" y="${H-6}" font-size="11" style="fill:var(--text2)">${t[0][0]}</text>
+    <text x="${W-P}" y="${H-6}" font-size="11" style="fill:var(--text2)" text-anchor="end">${t[t.length-1][0]}</text></svg>`;
+  }
+  return `<h2>${e.n}</h2><p>${e.c.toLocaleString()} certified positions</p>
+  <div class="stats">
+  <div class="stat"><div class="v">${fmt(e.p50)}</div><div class="l">Median</div></div>
+  <div class="stat"><div class="v">${fmt(e.p25)}</div><div class="l">25th</div></div>
+  <div class="stat"><div class="v">${fmt(e.p75)}</div><div class="l">75th</div></div>
+  <div class="stat"><div class="v">${fmt(e.p90)}</div><div class="l">90th</div></div></div>
+  ${inner}
+  <p><a class="btn" href="${LINKS[tab]}${e.s}${SUFFIX[tab]}">Full profile</a></p>`;
+}
+function load(tab){return cache[tab]||(cache[tab]=fetch(FILES[tab]).then(r=>r.json()));}
+function setupPair(tab,sa,sb,ra,rb){
+  load(tab).then(d=>{
+    let opts=Object.entries(d).sort((a,b2)=>b2[1].c-a[1].c)
+      .map(([k,e])=>`<option value="${k}">${e.n} (${e.c.toLocaleString()})</option>`).join('');
+    let A=document.getElementById(sa),B=document.getElementById(sb);
+    A.innerHTML=opts;B.innerHTML=opts;B.selectedIndex=1;
+    let upd=()=>{document.getElementById(ra).innerHTML=card(d[A.value],tab);
+                 document.getElementById(rb).innerHTML=card(d[B.value],tab);};
+    A.onchange=upd;B.onchange=upd;upd();
+  });
+}
+setupPair('emp','a','b','ra','rb');
+let offerReady=false;
+document.getElementById('tabs').addEventListener('click',ev=>{
+  let btn=ev.target.closest('.tab');if(!btn)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  let tab=btn.dataset.tab;
+  document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
+  document.getElementById('pane-'+tab).style.display='';
+  if(tab==='role'&&!cache.role)setupPair('role','a2','b2','ra2','rb2');
+  if(tab==='city'&&!cache.city)setupPair('city','a3','b3','ra3','rb3');
+  if(tab==='state'&&!cache.state)setupPair('state','a4','b4','ra4','rb4');
+  if(tab==='offer'&&!offerReady){
+    Promise.all([load('role'),load('state'),load('emp')]).then(([R,St,E])=>{
+      document.getElementById('o-role').innerHTML=Object.entries(R).sort((a,b)=>b[1].c-a[1].c)
+        .map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('');
+      document.getElementById('o-state').innerHTML=Object.entries(St).sort((a,b)=>b[1].c-a[1].c)
+        .map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('');
+      document.getElementById('o-emp').innerHTML=`<option value="">Any company</option>`+
+        Object.entries(E).sort((a,b)=>b[1].c-a[1].c)
+        .map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('');
+      offerReady=true;
+    });
+  }
+});
+function pctile(e,w){
+  let pts=[[10,e.p10],[25,e.p25],[50,e.p50],[75,e.p75],[90,e.p90]];
+  if(w<=pts[0][1])return Math.max(1,Math.round(10*w/pts[0][1]));
+  for(let i=0;i<pts.length-1;i++){
+    let [p0,v0]=pts[i],[p1,v1]=pts[i+1];
+    if(w<=v1)return Math.round(p0+(w-v0)/(v1-v0)*(p1-p0));
+  }
+  return Math.min(99,Math.round(90+(w-pts[4][1])/pts[4][1]*9));
+}
+document.getElementById('o-go').addEventListener('click',()=>{
+  let rk=document.getElementById('o-role').value, sk=document.getElementById('o-state').value,
+      ek=document.getElementById('o-emp').value;
+  let w=parseFloat(document.getElementById('o-wage').value);
+  if(!rk||!sk||!(w>0)){document.getElementById('o-res').innerHTML='<p>Enter a valid offer amount.</p>';return;}
+  let loads=[load('role'),load('state'),load('emp')];
+  if(ek)loads.push(fetch('/data/compare-emp-role.json').then(r=>r.json()).catch(()=>null));
+  Promise.all(loads).then(([R,St,E,ER])=>{
+    let r=R[rk],s=St[sk],pr=pctile(r,w),ps=pctile(s,w);
+    let verdict=pr>=75?'a strong offer — above most certified filings':pr>=50?'around the middle of the pack':pr>=25?'below average for this role':'low — most filings pay more';
+    let companyHtml='';
+    if(ek&&E[ek]){
+      let pair=ER&&ER[ek+'|'+rk];
+      if(pair){
+        let e={p10:pair[1],p25:pair[2],p50:pair[3],p75:pair[4],p90:pair[5]};
+        let pe=pctile(e,w);
+        companyHtml=`<p>At <b>${E[ek].n}</b>, that's the <b>${pe}th percentile</b> for ${r.n}
+        (their median: ${fmt(pair[3])}, ${pair[0].toLocaleString()} filings).</p>`;
+      }else{
+        let pe=pctile(E[ek],w);
+        companyHtml=`<p>At <b>${E[ek].n}</b> overall, that's the <b>${pe}th percentile</b>
+        of all their H-1B filings (too few ${r.n} filings for a role-specific read).</p>`;
+      }
+    }
+    document.getElementById('o-res').innerHTML=`<h2>${fmt(w)}</h2>
+    <p>For <b>${r.n}</b> in <b>${s.n}</b>, that's the <b>${pr}th percentile</b> nationally for the role
+    and the <b>${ps}th percentile</b> for the state — ${verdict}.</p>${companyHtml}
+    <div class="stats"><div class="stat"><div class="v">${fmt(r.p25)}</div><div class="l">Role 25th</div></div>
+    <div class="stat"><div class="v">${fmt(r.p50)}</div><div class="l">Role median</div></div>
+    <div class="stat"><div class="v">${fmt(r.p75)}</div><div class="l">Role 75th</div></div></div>
+    <p style="font-size:13px;color:var(--text2)">Based on certified H-1B offered wages, FY2023–FY2026. Not legal or career advice.</p>`;
+  });
+});
+</script></div>
+<footer>Data: U.S. Department of Labor OFLC LCA disclosure files, certified H-1B cases, FY2023–FY2026.
+LCA wage is the <em>offered</em> wage attested by the employer, not actual salary paid.
+Figures are estimates from public records — see our <a href="/disclaimer.html">disclaimer &amp; terms</a>
+and <a href="/privacy.html">privacy policy</a>.</footer>
+</body></html>
