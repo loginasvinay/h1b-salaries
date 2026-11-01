@@ -4,7 +4,7 @@ SITE=sys.argv[1]; DB=sys.argv[2]
 if os.path.exists(DB): os.remove(DB)
 c=sqlite3.connect(DB); c.execute('pragma journal_mode=off'); c.execute('pragma synchronous=off')
 c.execute('create table emp(slug text primary key,name text,cnt int,p10 int,p25 int,p50 int,p75 int,p90 int,pw int,score text,roles text,qtr text)')
-c.execute('create table cases(slug text,title text,wage int,city text,state text,recv text,begin text,fy text)')
+c.execute('create table cases(slug text,title text,wage int,city text,state text,recv text,begin text,fy text,cn text)')
 n=0
 for f in sorted(glob.glob(SITE+'/data/emp-shards/*.json')):
     for s,e in json.load(open(f)).items():
@@ -17,9 +17,11 @@ for f in sorted(glob.glob(SITE+'/data/cases/*.json')):
     sh=json.load(open(f)); T,L=sh.pop('T'),sh.pop('L')
     for s,rows in sh.items():
         recs=[]
-        for t,w,l,r,b,fy in rows:
+        for row in rows:
+            t,w,l,r,b,fy=row[:6]; cn=row[6] if len(row)>6 else 0
             ci,st=L[l].split('|')
-            recs.append((s,T[t],w,ci,st,dd(r),dd(b),str(2000+fy)))
-        c.executemany('insert into cases values(?,?,?,?,?,?,?,?)',recs); n+=len(recs)
+            s14=str(cn).zfill(14) if cn else None
+            recs.append((s,T[t],w,ci,st,dd(r),dd(b),str(2000+fy),f'I-{s14[:3]}-{s14[3:8]}-{s14[8:]}' if s14 else None))
+        c.executemany('insert into cases values(?,?,?,?,?,?,?,?,?)',recs); n+=len(recs)
 c.execute('create index ix_c on cases(slug)'); c.commit()
 print('employers',c.execute('select count(*) from emp').fetchone()[0],'cases',n,'distinct titles',c.execute('select count(distinct lower(title)) from cases').fetchone()[0])

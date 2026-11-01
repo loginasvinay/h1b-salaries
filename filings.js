@@ -1,7 +1,8 @@
 /* Filings table: one row per certified H-1B case.
-   Columns: Employer | Job title | Base salary | Location | Submit date | Start date.
+   Columns: Case number | Employer | Job title | Base salary | Location | Submit date | Start date.
    Fiscal-year tabs, text filter (job title or city), sortable, 50 rows per page.
-   Data: /data/cases/<key>.json  {"T":[titles],"L":["City|ST"],"<slug>":[[t,wage,l,recvDay,beginDay,fy2]]}
+   Data: /data/cases/<key>.json  {"T":[titles],"L":["City|ST"],"<slug>":[[t,wage,l,recvDay,beginDay,fy2,case]]}
+   case: DOL case number packed as digits (20023355584372 -> I-200-23355-584372), 0 when unknown.
    (days since 2000-01-01). Loads only when the section is opened or scrolled into view,
    or right away when the URL carries ?t=<job title>. */
 (function(){
@@ -10,6 +11,7 @@ function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 var EPOCH=Date.UTC(2000,0,1);
 function dstr(d){if(d<0)return '—';return new Date(EPOCH+d*864e5).toISOString().slice(0,10);}
+function caseNo(n){if(!n)return '';var s=String(n);while(s.length<14)s='0'+s;return 'I-'+s.slice(0,3)+'-'+s.slice(3,8)+'-'+s.slice(8);}
 function loc(l){var p=l.split('|');if(p[0]&&p[1])return p[0]+', '+p[1];return p[0]||p[1]||'—';}
 var api={pending:null};
 window.H1BFilings={show:function(title,fy){
@@ -29,7 +31,7 @@ window.initFilings=function(o){
     if(loaded)return;loaded=true;
     btn.disabled=true;btn.textContent='Loading filings…';
     fetch('/data/cases/'+o.key+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
-      T=sh.T;L=sh.L;rows=(sh[o.slug]||[]).map(function(r){return {t:T[r[0]],w:r[1],l:loc(L[r[2]]),r:r[3],b:r[4],fy:String(2000+r[5])};});
+      T=sh.T;L=sh.L;rows=(sh[o.slug]||[]).map(function(r){return {t:T[r[0]],w:r[1],l:loc(L[r[2]]),r:r[3],b:r[4],fy:String(2000+r[5]),c:caseNo(r[6])};});
       btn.style.display='none';wrap.style.display='';
       render(false);
     }).catch(function(){
@@ -47,9 +49,9 @@ window.initFilings=function(o){
   function arrow(c){return sortCol===c?(sortDir===1?' ▲':' ▼'):'';}
   function render(keepFocus){
     var filtered=rows.filter(function(r){
-      return (fy==='ALL'||r.fy===fy)&&(!q||r.t.toLowerCase().indexOf(q)>=0||r.l.toLowerCase().indexOf(q)>=0);
+      return (fy==='ALL'||r.fy===fy)&&(!q||r.t.toLowerCase().indexOf(q)>=0||r.l.toLowerCase().indexOf(q)>=0||r.c.toLowerCase().indexOf(q)>=0);
     });
-    var col={title:'t',wage:'w',loc:'l',recv:'r',begin:'b'}[sortCol];
+    var col={title:'t',wage:'w',loc:'l',recv:'r',begin:'b',cno:'c'}[sortCol];
     filtered.sort(function(a,b){
       var av=a[col],bv=b[col];
       if(typeof av==='number')return ((av<0?-1e9:av)-(bv<0?-1e9:bv))*sortDir;
@@ -62,11 +64,11 @@ window.initFilings=function(o){
     var tabs='<div class="tabs" role="tablist" aria-label="Fiscal year">'+['ALL'].concat(Object.keys(yrs).sort().reverse()).map(function(y){
       return '<button type="button" role="tab" class="tab'+(y===fy?' active':'')+'" aria-selected="'+(y===fy)+'" data-fy="'+y+'">'+(y==='ALL'?'All years':'FY'+y)+'</button>';}).join('')+'</div>';
     var th=function(c,label){return '<th class="sort" tabindex="0" role="button" data-c="'+c+'"'+(sortCol===c?' aria-sort="'+(sortDir>0?'ascending':'descending')+'"':'')+'>'+label+arrow(c)+'</th>';};
-    var h=tabs+'<div class="toolbar"><input class="search slim" id="f-q" placeholder="Filter by job title or city…" aria-label="Filter filings by job title or city" value="'+escH(q)+'">'
+    var h=tabs+'<div class="toolbar"><input class="search slim" id="f-q" placeholder="Filter by job title, city or case number…" aria-label="Filter filings by job title, city or case number" value="'+escH(q)+'">'
       +'<span class="sub">'+filtered.length.toLocaleString()+' filings'+(q?' matching “'+escH(q)+'” <button type="button" class="linkbtn" id="f-clear">clear</button>':'')+'</span></div>'
-      +'<div class="tscroll"><table class="dt"><thead><tr><th>Employer</th>'+th('title','Job title')+th('wage','Base salary')+th('loc','Location')+th('recv','Submit date')+th('begin','Start date')+'</tr></thead><tbody>'
+      +'<div class="tscroll"><table class="dt filings"><thead><tr>'+th('cno','Case number')+'<th>Employer</th>'+th('title','Job title')+th('wage','Base salary')+th('loc','Location')+th('recv','Submit date')+th('begin','Start date')+'</tr></thead><tbody>'
       +chunk.map(function(r){
-        return '<tr><td>'+escH(o.name)+'</td><td>'+escH(r.t)+'</td><td>'+money(r.w)+'</td><td>'+escH(r.l)+'</td><td>'+dstr(r.r)+'</td><td>'+dstr(r.b)+'</td></tr>';
+        return '<tr><td class="cno">'+(r.c||'—')+'</td><td>'+escH(o.name)+'</td><td>'+escH(r.t)+'</td><td>'+money(r.w)+'</td><td>'+escH(r.l)+'</td><td>'+dstr(r.r)+'</td><td>'+dstr(r.b)+'</td></tr>';
       }).join('')+'</tbody></table></div>';
     var pg='<nav class="pager" aria-label="Filings pages">';
     function pbtn(p,label,dis){return '<button type="button" class="tab'+(p===page?' active':'')+'" data-p="'+p+'"'+(dis?' disabled':'')+(p===page?' aria-current="page"':'')+'>'+label+'</button>';}

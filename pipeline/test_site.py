@@ -52,6 +52,9 @@ with sync_playwright() as p:
     pg.click('#filings-wrap [data-fy="ALL"]')
     n = num(re.search(r'([\d,]+) filings', pg.inner_text('#filings-wrap')).group(1))
     check('google: all filings 34,084', n == 34084, str(n))
+    cnos = pg.eval_on_selector_all('#filings-wrap td.cno', 'els=>els.map(e=>e.textContent)')
+    good = [c for c in cnos if re.fullmatch(r'I-\d{3}-\d{5}-\d{6}', c)]
+    check('google: case numbers shown', len(good) >= 45, f'{len(good)}/{len(cnos)} rows')
 
     # 2. Amazon pagination
     pg.goto(B + '/employer/amazon-com-services-llc-amazon.html')

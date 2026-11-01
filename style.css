@@ -221,3 +221,5 @@ td:first-child{min-width:8.5rem}
 .grid2>*,.cmp-grid>*{min-width:0}
 .tscroll{position:relative}
 .sr-only{clip-path:inset(50%);margin:-1px;padding:0;border:0}
+.filings td.cno{white-space:nowrap;font-size:13.5px;color:var(--text2)}
+.filings td:nth-child(2),.filings td:nth-child(3){white-space:normal;min-width:9rem}
