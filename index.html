@@ -73,16 +73,35 @@ covers it.</p></div>
 "acceptedAnswer":{"@type":"Answer","text":"PERM is the Department of Labor's program for certifying the first step of most employment-based green cards, with its own public wage disclosure data."}}
 ]}</script>
 <script>
-let D=null;fetch('/data/search.json').then(r=>r.json()).then(d=>D=d);
+let B=null,SC={},STATIC=null,SEQ=0;
+function loadBundle(){if(!B){B=fetch('/data/search.json').then(r=>r.json()).then(d=>{STATIC=new Set(d.employers.map(e=>e.s));return d;});}return B;}
+function normKey(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,2);}
+function loadShard(k){if(!SC[k]){SC[k]=fetch('/data/emp-shards/'+k+'.json').then(r=>r.json()).catch(()=>({}));}return SC[k];}
+function empLink(s){return STATIC&&STATIC.has(s)?'/employer/'+s+'.html':'/employer/'+s;}
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 const q=document.getElementById('q'),res=document.getElementById('res');
-q.addEventListener('input',()=>{const t=q.value.trim().toLowerCase();res.innerHTML='';
-if(t.length<2||!D)return;
-const emps=D.employers.filter(e=>e.n.toLowerCase().includes(t)).slice(0,12);
+q.addEventListener('input',()=>{
+const t=q.value.trim().toLowerCase();res.innerHTML='';
+if(t.length<2)return;
+const my=++SEQ,nk=normKey(t),jobs=[loadBundle()];
+if(nk.length===2)jobs.push(loadShard(nk));
+Promise.all(jobs).then(j=>{
+if(my!==SEQ||q.value.trim().toLowerCase()!==t)return;
+const D=j[0],S=j[1];
+let pref=[];
+if(S){for(const [slug,e] of Object.entries(S)){if(e.n.toLowerCase().startsWith(t))pref.push({n:e.n,s:slug,c:e.c});}}
+pref.sort((a,b)=>b.c-a.c);
+const seen=new Set(pref.map(e=>e.s));
+let subs=D.employers.filter(e=>e.n.toLowerCase().includes(t)&&!seen.has(e.s));
+let emps=pref.slice(0,12);
+if(emps.length<12)emps=emps.concat(subs.slice(0,12-emps.length));
 const rls=D.roles.filter(r=>(r.t+' '+r.s).toLowerCase().includes(t)).slice(0,8);
 let h='';
-emps.forEach(e=>{h+=`<a href="/employer/${e.s}.html">${e.n}<span class="c">${e.c.toLocaleString()} positions</span></a>`});
-rls.forEach(r=>{h+=`<a href="/role/${r.s}.html">${r.t}<span class="c">${r.c.toLocaleString()} positions</span></a>`});
-res.innerHTML=h||'<p>No matches yet — try a company name or job title.</p>';});
+emps.forEach(e=>{h+=`<a href="${empLink(e.s)}">${escH(e.n)}<span class="c">${e.c.toLocaleString()} positions</span></a>`});
+rls.forEach(r=>{h+=`<a href="/role/${r.s}.html">${escH(r.t)}<span class="c">${r.c.toLocaleString()} positions</span></a>`});
+res.innerHTML=h||'<p>No matches yet — try a company name or job title.</p>';
+});
+});
 </script></div>
 <footer>Data: U.S. Department of Labor OFLC LCA disclosure files, certified H-1B cases, FY2023–FY2026.
 LCA wage is the <em>offered</em> wage attested by the employer, not actual salary paid.

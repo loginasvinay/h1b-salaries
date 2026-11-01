@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Employer H-1B Salary — Median Pay, Trends &amp; Roles</title><meta name="description" content="Employer H-1B salary profile: median pay, quarterly trends, top roles, and all filings.">
+<meta property="og:title" content="Employer H-1B Salary — Median Pay, Trends &amp; Roles">
+<meta property="og:description" content="Employer H-1B salary profile: median pay, quarterly trends, top roles, and all filings.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="/style.css"><link rel="canonical" href="https://h1bsalary.clearinfohub.com/employer/view.html"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://h1bsalary.clearinfohub.com/"}, {"@type": "ListItem", "position": 2, "name": "Employers", "item": "https://h1bsalary.clearinfohub.com/employers/"}, {"@type": "ListItem", "position": 3, "name": "Employer", "item": "https://h1bsalary.clearinfohub.com/employer/view.html"}]}</script></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
+<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
+<a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
+<div class="wrap" id="main"><div class="card" id="emp-view-card"><div id="emp-view"><p>Loading employer profile…</p></div></div>
+<script src="/filings.js"></script>
+<script>
+(function(){
+function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
+function distBar(p){
+  var lo=Math.min.apply(null,p),hi=Math.max.apply(null,p),span=Math.max(hi-lo,1);
+  function pct(v){return (v-lo)/span*100;}
+  var marks=[1,2,3].map(function(i){return '<span class="tick" style="left:'+pct(p[i]).toFixed(1)+'%" title="'+money(p[i])+'"></span>';}).join('');
+  return '<div class="dist"><div class="bar" style="left:'+pct(p[0]).toFixed(1)+'%;width:'+(pct(p[4])-pct(p[0])).toFixed(1)+'%">'+marks+'</div></div>'
+    +'<div class="dist-labels"><span>'+money(p[0])+'</span><span class="med">'+money(p[2])+' median</span><span>'+money(p[4])+'</span></div>';
+}
+function scoreCard(sc){
+  if(!sc)return '';
+  var flags='';
+  if(sc.h)flags+='<span style="display:inline-block;background:var(--well);border:1px solid var(--hairline);border-radius:980px;padding:2px 12px;font-size:13px;margin-right:.4rem">High denial risk</span>';
+  if(sc.ld)flags+='<span style="display:inline-block;background:var(--well);border:1px solid var(--hairline);border-radius:980px;padding:2px 12px;font-size:13px">Limited data</span>';
+  var trendTxt=sc.t!=null?(sc.t>0?'rising':sc.t<0?'falling':'flat'):'flat';
+  var trendS='FY24 → FY25 filings '+trendTxt+(sc.t!=null?' ('+(sc.t>0?'+':'')+sc.t.toFixed(0)+'%)':'')+'; FY26 is partial and not scored';
+  return '<div class="card" style="margin-bottom:1.2rem"><h2>Sponsorship score: '
+    +'<span style="font-size:40px">'+sc.sc+'</span>'
+    +'<span style="font-size:20px;color:var(--text2)"> / 100 — '+escH(sc.b)+'</span></h2>'
+    +'<p>'+flags+'</p>'
+    +'<p style="color:var(--text2)">How consistently this employer sponsors foreign workers, from public DOL filings. Score = volume (40) + trend (20) + denial rate (20) + consistency (10) + H-1B-to-PERM conversion (10). <a href="/about.html">Full formula →</a></p>'
+    +'<div class="stats">'
+    +'<div class="stat"><div class="v">'+sc.l.toLocaleString()+'</div><div class="l">H-1B LCA filings</div></div>'
+    +'<div class="stat"><div class="v">'+sc.p.toLocaleString()+'</div><div class="l">PERM certifications</div></div>'
+    +'<div class="stat"><div class="v">'+sc.d.toFixed(1)+'%</div><div class="l">PERM denial rate</div></div>'
+    +'<div class="stat"><div class="v">'+sc.y+' of 4</div><div class="l">Years filing</div></div>'
+    +'<div class="stat"><div class="v">'+sc.r.toFixed(2)+'</div><div class="l">PERM per H-1B filing</div></div>'
+    +'</div>'
+    +'<p style="font-size:13px;color:var(--text2)">Components: volume '+sc.v[0].toFixed(0)+' · trend '+sc.v[1].toFixed(0)+' · denial '+sc.v[2].toFixed(0)+' · consistency '+sc.v[3].toFixed(0)+' · conversion '+sc.v[4].toFixed(0)+'. '+escH(trendS)+'. Counts are filings, not people. Scores describe filing history only — they are not a prediction about any individual case.</p></div>';
+}
+function trendSvg(series){
+  var s=series.slice(-16);
+  if(s.length<2)return '';
+  var W=560,H=170,P=34,vals=s.map(function(p){return p[1];});
+  var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),span=Math.max(hi-lo,1);
+  lo-=span*0.15;hi+=span*0.15;span=hi-lo;
+  function X(i){return P+i*(W-2*P)/Math.max(s.length-1,1);}
+  function Y(v){return H-P+8-(v-lo)/span*(H-2*P);}
+  var pts=s.map(function(p,i){return X(i).toFixed(1)+','+Y(p[1]).toFixed(1);}).join(' ');
+  var area=P+','+(H-P+8)+' '+pts+' '+(W-P)+','+(H-P+8);
+  var dots=s.map(function(p,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="3.2" style="fill:var(--accent)"><title>'+p[0]+': '+money(p[1])+' ('+p[2].toLocaleString()+' positions)</title></circle>';}).join('');
+  var chg=vals[0]?(vals[vals.length-1]-vals[0])/vals[0]*100:0;
+  var arrow=chg>=0?'▲':'▼',chgVar=chg>=0?'var(--up)':'var(--down)';
+  return '<h3>Quarterly median pay <span style="font-size:.85rem;color:var(--text2);font-weight:400">'+s[0][0]+' → '+s[s.length-1][0]+' · <b style="color:'+chgVar+'">'+arrow+' '+Math.abs(chg).toFixed(1)+'%</b></span></h3>'
+    +'<svg class="trend" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Quarterly median pay trend, '+s[0][0]+' to '+s[s.length-1][0]+'">'
+    +'<polygon points="'+area+'" style="fill:var(--accent)" opacity="0.12"/>'
+    +'<polyline points="'+pts+'" fill="none" style="stroke:var(--accent)" stroke-width="2.5"/>'
+    +dots
+    +'<text x="'+P+'" y="'+(H-8)+'" font-size="11" style="fill:var(--text2)">'+s[0][0]+'</text>'
+    +'<text x="'+(W-P)+'" y="'+(H-8)+'" font-size="11" style="fill:var(--text2)" text-anchor="end">'+s[s.length-1][0]+'</text>'
+    +'<text x="'+P+'" y="16" font-size="11" style="fill:var(--text2)">'+money(hi)+'</text>'
+    +'<text x="'+P+'" y="'+(H-P+2)+'" font-size="11" style="fill:var(--text2)">'+money(lo)+'</text></svg>';
+}
+var box=document.getElementById('emp-view');
+var path=window.location.pathname.replace(/^\/employer\//,'');
+if(path.endsWith('.html'))path=path.slice(0,-5);
+var slug=decodeURIComponent(path);
+if(!slug||slug==='view'){
+  box.innerHTML='<h1>Employer profile</h1><p>Pick an employer from <a href="/">search</a> or <a href="/employers/">the employer list</a>.</p>';
+} else {
+  var key=slug.replace(/-/g,'').slice(0,2);
+  fetch('/data/emp-shards/'+key+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
+    var e=sh[slug];
+    if(!e){
+      box.innerHTML='<h1>Employer not found</h1><p>No H-1B filings found for “'+escH(slug)+'”. Try <a href="/">search</a>.</p>';
+      return;
+    }
+    document.title=e.n+' H-1B Salary — Median Pay, Trends & Roles';
+    var md=document.querySelector('meta[name="description"]');
+    if(md)md.content='H-1B pay at '+e.n+': median '+money(e.p[2])+', quarterly pay trends, top roles.';
+    var h='<h1>'+escH(e.n)+'</h1>'
+      +'<p>H-1B pay data: '+e.c.toLocaleString()+' certified positions, FY2023–FY2026.</p>'
+      +'<div class="stats">'
+      +'<div class="stat"><div class="v">'+e.c.toLocaleString()+'</div><div class="l">certified positions</div></div>'
+      +'<div class="stat"><div class="v">'+money(e.p[2])+'</div><div class="l">Median pay</div></div>'
+      +'<div class="stat"><div class="v">'+money(e.p[1])+'</div><div class="l">25th pct</div></div>'
+      +'<div class="stat"><div class="v">'+money(e.p[3])+'</div><div class="l">75th pct</div></div>'
+      +'<div class="stat"><div class="v">'+money(e.p[4])+'</div><div class="l">90th pct</div></div>'
+      +'<div class="stat"><div class="v">'+money(e.p[0])+'</div><div class="l">10th pct</div></div></div>'
+      +'<div class="note">Estimates from public U.S. Department of Labor records — wages are employer-attested <em>offered</em> wages, not verified salaries paid; counts are filings, not people. Not legal, financial, or career advice. See our <a href="/disclaimer.html">disclaimer &amp; terms</a>.</div>'
+      +'<div class="note">Data: DOL filings FY2023–FY2026 (through June 2026) · Page updated October 2026</div>';
+    if(e.w)h+='<div class="stats"><div class="stat"><div class="v">'+money(e.w)+'</div><div class="l">Median prevailing wage</div></div></div>';
+    h+=scoreCard(e.s);
+    h+=distBar(e.p);
+    h+=trendSvg(e.q);
+    h+='<div class="grid2"><div class="card"><h2>Pay by role</h2><table><tr><th>Role</th><th>Positions</th><th>Median</th></tr>'
+      +e.r.map(function(r){return '<tr><td><a href="/role/'+r[0]+'.html">'+escH(r[1])+'</a></td><td>'+r[2].toLocaleString()+'</td><td>'+money(r[3])+'</td></tr>';}).join('')
+      +'</table></div><div class="card"><h2>About this profile</h2><p>Full static profile pages exist for the 2,000 largest sponsors. This profile is generated on demand from the same DOL filings data for a smaller sponsor.</p><p><a href="/employers/">Browse all employers →</a></p></div></div>';
+    h+='<div class="card" id="filings"><h2>All filings</h2><p>'+escH(e.n)+' has '+e.c.toLocaleString()+' certified H-1B filings (FY2023–FY2026). The table below lists every case — job title, base salary, location, submit date and start date. Case data loads on demand, only when you open this section.</p><div id="filings-box"></div></div>';
+    box.innerHTML=h;
+    initFilings({slug:slug,key:key,name:e.n,count:e.c});
+  }).catch(function(){
+    box.innerHTML='<h1>Employer profile</h1><p>Could not load this employer profile. Please try again or pick an employer from <a href="/">search</a>.</p>';
+  });
+}
+})();
+</script></div>
+<footer>Data: U.S. Department of Labor OFLC LCA disclosure files, certified H-1B cases, FY2023–FY2026.
+LCA wage is the <em>offered</em> wage attested by the employer, not actual salary paid.
+Figures are estimates from public records — see our <a href="/disclaimer.html">disclaimer &amp; terms</a>
+and <a href="/privacy.html">privacy policy</a>.</footer>
+<div class="disc-banner" id="disc-banner" role="note"><p>Estimates from public U.S. Department of Labor records — wages are employer-attested offered wages, not verified salaries paid. Not legal, financial, or career advice. <a href="/disclaimer.html">Full disclaimer</a></p><button type="button" id="disc-close" aria-label="Dismiss disclaimer banner">&times;</button></div>
+<script>(function(){try{var b=document.getElementById('disc-banner');if(!b)return;if(localStorage.getItem('h1b-disc-dismissed')){b.remove();return;}function pad(){document.body.style.paddingBottom=b.offsetHeight+'px';}pad();window.addEventListener('resize',pad);document.getElementById('disc-close').addEventListener('click',function(){try{localStorage.setItem('h1b-disc-dismissed','1');}catch(e){}b.remove();document.body.style.paddingBottom='';});}catch(e){}})();</script>
+</body></html>
