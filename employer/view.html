@@ -9,10 +9,10 @@
 <link rel="stylesheet" href="/style.css"><link rel="canonical" href="https://h1bsalary.clearinfohub.com/employer/view.html"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://h1bsalary.clearinfohub.com/"}, {"@type": "ListItem", "position": 2, "name": "Employers", "item": "https://h1bsalary.clearinfohub.com/employers/"}, {"@type": "ListItem", "position": 3, "name": "Employer", "item": "https://h1bsalary.clearinfohub.com/employer/view.html"}]}</script></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
-<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
+<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/titles/">Job titles</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
 <a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
 <div class="wrap" id="main"><div class="card" id="emp-view-card"><div id="emp-view"><p>Loading employer profile…</p></div></div>
-<script src="/filings.js"></script>
+<script src="/filings.js"></script><script src="/jt.js"></script>
 <script>
 (function(){
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -94,7 +94,8 @@ if(!slug){
       +'<div class="stat"><div class="v">'+money(e.p[4])+'</div><div class="l">90th pct</div></div>'
       +'<div class="stat"><div class="v">'+money(e.p[0])+'</div><div class="l">10th pct</div></div></div>'
       +'<div class="note">Estimates from public U.S. Department of Labor records — wages are employer-attested <em>offered</em> wages, not verified salaries paid; counts are filings, not people. Not legal, financial, or career advice. See our <a href="/disclaimer.html">disclaimer &amp; terms</a>.</div>'
-      +'<div class="note">Data: DOL filings FY2023–FY2026 (through June 2026) · Page updated October 2026</div>';
+      +'<div class="note">Data: DOL filings FY2023–FY2026 (through June 2026) · Page updated October 2026</div>'
+      +'<div class="card" id="job-titles" data-slug="'+escH(slug)+'"><h2>Salaries by job title</h2><div id="jt-box"><p>Loading job titles…</p></div></div>';
     if(e.w)h+='<div class="stats"><div class="stat"><div class="v">'+money(e.w)+'</div><div class="l">Median prevailing wage</div></div></div>';
     h+=scoreCard(e.s);
     h+=distBar(e.p);
@@ -105,6 +106,7 @@ if(!slug){
     h+='<div class="card" id="filings"><h2>All filings</h2><p>'+escH(e.n)+' has '+e.c.toLocaleString()+' certified H-1B filings (FY2023–FY2026). The table below lists every case — job title, base salary, location, submit date and start date. Case data loads on demand, only when you open this section.</p><div id="filings-box"></div></div>';
     box.innerHTML=h;
     initFilings({slug:slug,key:key,name:e.n,count:e.c});
+    if(window.initJobTitles)window.initJobTitles(document.getElementById('job-titles'));
   }).catch(function(){
     box.innerHTML='<h1>Employer profile</h1><p>Could not load this employer profile. Please try again or pick an employer from <a href="/">search</a>.</p>';
   });
