@@ -15,8 +15,8 @@ for(const e of document.querySelectorAll('body *')){const r=e.getBoundingClientR
 out.over=[...new Set(out.over)].slice(0,8);out.tap=[...new Set(out.tap)].slice(0,8);out.tiny=[...new Set(out.tiny)].slice(0,5);return out;}'''
 with sync_playwright() as p:
     b=p.chromium.launch(executable_path='/usr/bin/google-chrome',args=['--no-sandbox'])
-    for w,h,name in [(375,812,'phone'),(768,1024,'tablet'),(1280,900,'desktop')]:
-        ctx=b.new_context(viewport={'width':w,'height':h},is_mobile=w<700,has_touch=w<700,device_scale_factor=2 if w<700 else 1)
+    for w,h,name in [(320,640,'small'),(375,812,'phone'),(768,1024,'tablet'),(1280,900,'desktop')]:
+        ctx=b.new_context(viewport={'width':w,'height':h},is_mobile=w<700 and w!=320,has_touch=w<700,device_scale_factor=2 if w<700 else 1)
         pg=ctx.new_page()
         for u in PAGES:
             pg.goto(B+u);pg.wait_for_timeout(900)

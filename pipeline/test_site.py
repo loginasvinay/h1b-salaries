@@ -118,6 +118,17 @@ with sync_playwright() as p:
     pg.wait_for_timeout(800)
     check('bare view: no redirect', same_page(B + '/employer/view.html', pg.url), pg.url)
 
+    # 8. No sideways scrolling on a small phone (desktop-style scrollbar = narrowest real case)
+    sp = br.new_page(viewport={'width': 340, 'height': 760})
+    wide = []
+    for u in ['/', '/employer/google-llc-google.html', '/employer/view.html?e=cravath-swaine-moore-llp-cravat',
+              '/title/software-engineer.html', '/titles/', '/sponsors.html', '/compare.html']:
+        sp.goto(B + u)
+        sp.wait_for_timeout(1200)
+        sw, vw = sp.evaluate('[document.documentElement.scrollWidth,document.documentElement.clientWidth]')
+        if sw > vw:
+            wide.append(f'{u} {sw}>{vw}')
+    check('phone: no horizontal overflow', not wide, '; '.join(wide))
     check('no JS errors', not errs, '; '.join(errs[:3]))
     br.close()
 

@@ -219,3 +219,5 @@ td:first-child{min-width:8.5rem}
 /* a card inside a card becomes a ruled section, not a second box */
 .card .card{border:0;border-top:1px solid var(--hairline);border-radius:0;padding:1.4rem 0 0;margin:1.4rem 0 0;background:transparent}
 .grid2>*,.cmp-grid>*{min-width:0}
+.tscroll{position:relative}
+.sr-only{clip-path:inset(50%);margin:-1px;padding:0;border:0}
