@@ -14,7 +14,17 @@ def load_dir(d):
         out.update(json.load(open(f)))
     return out
 
+# Cache-busting: every reference to a shared asset carries ?v=<content hash>, so browsers
+# can cache CSS/JS for a week yet pick up a new release on the very next page view.
+import hashlib
+ASSETS = ['style.css', 'search.js', 'filings.js', 'jt.js', 'table.js', 'title-view.js']
+VER = {a: hashlib.sha1(open(f'{SITE}/{a}', 'rb').read()).hexdigest()[:10] for a in ASSETS if os.path.exists(f'{SITE}/{a}')}
+ASSET_RE = re.compile(r'(["\'])/(' + '|'.join(re.escape(a) for a in VER) + r')(?:\?v=[0-9a-f]+)?\1')
+def ver(html):
+    return ASSET_RE.sub(lambda m: f'{m.group(1)}/{m.group(2)}?v={VER[m.group(2)]}{m.group(1)}', html)
+
 def write(path, text):
+    text = ver(text)
     full = SITE + path
     os.makedirs(os.path.dirname(full), exist_ok=True)
     if os.path.exists(full) and open(full).read() == text:
@@ -182,6 +192,7 @@ for f in sorted(glob.glob(SITE + '/**/*.html', recursive=True)):
         t = t.replace('<a href="/employers/">Employers</a>', '<a href="/employers/">Employers</a><a href="/titles/">Job titles</a>', 1)
     for a, b in SWAP:
         t = t.replace(a, b)
+    t = ver(t)
     if 'href="/style.css"' in t and PRELOAD not in t:
         t = t.replace('<link rel="stylesheet" href="/style.css">', PRELOAD + '<link rel="stylesheet" href="/style.css">', 1)
     if t != t0:
