@@ -37,9 +37,9 @@ def page(path, title, desc, crumbs, body, extra_ld=(), scripts=''):
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-<link rel="stylesheet" href="/style.css"><link rel="canonical" href="{BASE}{path}">{lds}</head><body>
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">
+<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="/style.css"><link rel="canonical" href="{BASE}{path}">{lds}</head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
 {NAV}</div></header>

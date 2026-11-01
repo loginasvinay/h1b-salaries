@@ -167,13 +167,24 @@ for s in sorted(emp_static):
     if t2 != t:
         open(f, 'w').write(t2); changed += 1
 
-# ---------------- every page: nav gets "Job titles" ----------------
-for f in glob.glob(SITE + '/**/*.html', recursive=True):
+# ---------------- every page: nav, theme colors, font preload ----------------
+PRELOAD = '<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>'
+SWAP = [('color:#8a93b8', 'color:var(--text2)'), ('background:#67e8f9', 'background:var(--l1)'),
+        ('background:#22d3ee', 'background:var(--l2)'), ('background:#818cf8', 'background:var(--l3)'),
+        ('background:#c084fc', 'background:var(--l4)'),
+        ('<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">', '<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">'),
+        ('<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">', '<meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">')]
+for f in sorted(glob.glob(SITE + '/**/*.html', recursive=True)):
     if '/.git/' in f:
         continue
-    t = open(f).read()
+    t0 = t = open(f).read()
     if '<a href="/employers/">Employers</a>' in t and 'href="/titles/">Job titles' not in t:
         t = t.replace('<a href="/employers/">Employers</a>', '<a href="/employers/">Employers</a><a href="/titles/">Job titles</a>', 1)
+    for a, b in SWAP:
+        t = t.replace(a, b)
+    if 'href="/style.css"' in t and PRELOAD not in t:
+        t = t.replace('<link rel="stylesheet" href="/style.css">', PRELOAD + '<link rel="stylesheet" href="/style.css">', 1)
+    if t != t0:
         open(f, 'w').write(t); changed += 1
 print('title pages', len(static_titles), '| files changed', changed)
 
