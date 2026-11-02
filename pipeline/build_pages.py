@@ -197,7 +197,8 @@ SWAP = [('color:#8a93b8', 'color:var(--text2)'), ('background:#67e8f9', 'backgro
         ('background:#22d3ee', 'background:var(--l2)'), ('background:#818cf8', 'background:var(--l3)'),
         ('background:#c084fc', 'background:var(--l4)'),
         ('<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">', '<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">'),
-        ('<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">', '<meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">')]
+        ('<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">', '<meta name="color-scheme" content="only light">'),
+        ('<meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">', '<meta name="color-scheme" content="only light">')]
 for f in sorted(glob.glob(SITE + '/**/*.html', recursive=True)):
     if '/.git/' in f:
         continue

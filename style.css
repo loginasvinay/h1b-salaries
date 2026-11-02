@@ -3,7 +3,7 @@
    Type: Instrument Sans (OFL, self-hosted, /fonts/OFL.txt), tabular lining numerals for all figures. */
 @font-face{font-family:"Instrument Sans";src:url(/fonts/instrument-sans.woff) format("woff");
 font-weight:400 700;font-style:normal;font-display:swap}
-:root{
+:root{color-scheme:light;
 --bg:#f5f6f8;--card:#ffffff;--hairline:#e3e6ec;--well:#f0f2f5;
 --text:#141b2d;--text2:#5c6577;--link:#0d6150;--accent:#0f6e58;--accent-ink:#ffffff;
 --brass:#a87a22;--btn-bg:#0f6e58;--btn-ink:#ffffff;
@@ -11,12 +11,7 @@ font-weight:400 700;font-style:normal;font-display:swap}
 --l1:#a7d8c8;--l2:#4fae91;--l3:#0f6e58;--l4:#a87a22;
 --r-lg:14px;--r-sm:8px;
 --font:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-@media (prefers-color-scheme:dark){:root{
---bg:#0f141c;--card:#161d28;--hairline:rgba(255,255,255,.09);--well:rgba(255,255,255,.04);
---text:#e8ecf2;--text2:#97a3b6;--link:#6fd3b4;--accent:#5cc8a8;--accent-ink:#06261e;
---brass:#d8b260;--btn-bg:#5cc8a8;--btn-ink:#06261e;
---up:#5fd49a;--down:#f08a7e;--nav:rgba(15,20,28,.86);--ring:rgba(92,200,168,.28);
---l1:#2d5a4d;--l2:#3f9c80;--l3:#6fd3b4;--l4:#d8b260}}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--font);margin:0;color:var(--text);background:var(--bg);font-size:16px;line-height:1.55;
