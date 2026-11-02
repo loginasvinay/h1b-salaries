@@ -12,9 +12,10 @@
 <nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/titles/">Job titles</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
 <a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
 <div class="wrap" id="main"><div class="card" id="emp-view-card"><div id="emp-view"><p>Loading employer profile…</p></div></div>
-<script src="/filings.js?v=93e266c620"></script><script src="/jt.js?v=f3a667dfeb"></script>
+<script src="/filings.js?v=e13aa6b76c"></script><script src="/jt.js?v=2d75d50a85"></script>
 <script>
 (function(){
+var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 function distBar(p){
@@ -75,7 +76,7 @@ if(!slug){
   box.innerHTML='<h1>Employer profile</h1><p>Pick an employer from <a href="/">search</a> or <a href="/employers/">the employer list</a>.</p>';
 } else {
   var key=slug.replace(/-/g,'').slice(0,2);
-  fetch('/data/emp-shards/'+key+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
+  fetch('/data/emp-shards/'+key+'.json?v='+DV).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
     var e=sh[slug];
     if(!e){
       box.innerHTML='<h1>Employer not found</h1><p>No H-1B filings found for “'+escH(slug)+'”. Try <a href="/">search</a>.</p>';

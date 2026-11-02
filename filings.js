@@ -7,6 +7,7 @@
    or right away when the URL carries ?t=<job title>. */
 (function(){
 'use strict';
+var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 var EPOCH=Date.UTC(2000,0,1);
@@ -30,7 +31,7 @@ window.initFilings=function(o){
   function load(){
     if(loaded)return;loaded=true;
     btn.disabled=true;btn.textContent='Loading filings…';
-    fetch('/data/cases/'+o.key+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
+    fetch('/data/cases/'+o.key+'.json?v='+DV).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(sh){
       T=sh.T;L=sh.L;rows=(sh[o.slug]||[]).map(function(r){return {t:T[r[0]],w:r[1],l:loc(L[r[2]]),r:r[3],b:r[4],fy:String(2000+r[5]),c:caseNo(r[6])};});
       btn.style.display='none';wrap.style.display='';
       render(false);

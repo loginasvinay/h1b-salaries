@@ -2,13 +2,14 @@
    /data/title-shards/<fnv1a(slug)%256>.json. Never navigates away on a miss. */
 (function(){
 'use strict';
+var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
 function bucket(s,n){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 var box=document.getElementById('t-view');if(!box)return;
 var slug='';try{slug=(new URLSearchParams(location.search).get('t')||'').trim();}catch(e){}
 if(!slug){box.innerHTML='<h1>Job titles</h1><p>Pick a job title from <a href="/">search</a> or <a href="/titles/">the job title list</a>.</p>';return;}
-fetch('/data/title-shards/'+bucket(slug,256)+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
+fetch('/data/title-shards/'+bucket(slug,256)+'.json?v='+DV).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
   var t=d[slug];
   if(!t){box.innerHTML='<h1>Job title not found</h1><p>No H-1B filings found for “'+escH(slug)+'”. Try <a href="/?q='+encodeURIComponent(slug.replace(/-/g,' '))+'">searching for it</a>.</p>';return;}
   var p=t.p;

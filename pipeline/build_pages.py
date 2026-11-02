@@ -17,6 +17,19 @@ def load_dir(d):
 # Cache-busting: every reference to a shared asset carries ?v=<content hash>, so browsers
 # can cache CSS/JS for a week yet pick up a new release on the very next page view.
 import hashlib
+# Data version: one hash over every data file the scripts fetch, written into each script as
+# var DV='...'; fetches append ?v=DV, so a data refresh is never hidden behind a browser cache.
+_h = hashlib.sha1()
+for _f in sorted(glob.glob(SITE + '/data/**/*.json', recursive=True)):
+    _h.update(_f[len(SITE):].encode()); _h.update(str(os.path.getsize(_f)).encode())
+    _h.update(hashlib.sha1(open(_f, 'rb').read()).digest())
+DV = _h.hexdigest()[:10]
+for _a in ['filings.js', 'jt.js', 'title-view.js', 'search.js', 'employer/view.html']:
+    _p = f'{SITE}/{_a}'
+    _t = open(_p).read()
+    _t2 = re.sub(r"var DV='[0-9a-f]*';", f"var DV='{DV}';", _t)
+    if _t2 != _t:
+        open(_p, 'w').write(_t2)
 ASSETS = ['style.css', 'search.js', 'filings.js', 'jt.js', 'table.js', 'title-view.js']
 VER = {a: hashlib.sha1(open(f'{SITE}/{a}', 'rb').read()).hexdigest()[:10] for a in ASSETS if os.path.exists(f'{SITE}/{a}')}
 ASSET_RE = re.compile(r'(["\'])/(' + '|'.join(re.escape(a) for a in VER) + r')(?:\?v=[0-9a-f]+)?\1')

@@ -4,9 +4,10 @@
    Built by pipeline/build_search.py. */
 (function(){
 'use strict';
+var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
 var SX={},SPLIT=null,EXTRA=null,TOP=null;
 var STOP={inc:1,llc:1,corp:1,corporation:1,co:1,ltd:1,limited:1,the:1,of:1,and:1,lp:1,llp:1,pllc:1,pc:1,pa:1,na:1,us:1,usa:1,company:1};
-function getJSON(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
+function getJSON(u){return fetch(u+(u.indexOf('?')<0?'?':'&')+'v='+DV).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
 function words(s){return (s.toLowerCase().match(/[a-z0-9+#]+/g)||[]);}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function money(v){return v==null?'':'$'+Math.round(v).toLocaleString();}

@@ -3,6 +3,7 @@
    [title, titleSlug, filings, median, min, max, [[c,med]|0 per FY2023..FY2026]]. */
 (function(){
 'use strict';
+var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
 var FYS=['2023','2024','2025','2026'],NB=512,STATIC_T=200;
 function bucket(s,n){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -12,7 +13,7 @@ window.initJobTitles=function(card){
   card=card||document.getElementById('job-titles');
   if(!card||card.dataset.ready)return;card.dataset.ready='1';
   var slug=card.dataset.slug,box=card.querySelector('#jt-box');
-  fetch('/data/emp-titles/'+bucket(slug,NB)+'.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
+  fetch('/data/emp-titles/'+bucket(slug,NB)+'.json?v='+DV).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
     var rows=d[slug]||[];if(!rows.length)return;
     var fy='ALL',q='',all=false,sortK=2,dir=-1;
     var years=FYS.filter(function(y,i){return rows.some(function(r){return r[6][i];});});
@@ -55,7 +56,7 @@ window.initJobTitles=function(card){
     }
     // titles with a static page: those listed in titles-top with the flag; fall back to the view page.
     var STATIC={};function isStatic(s){return !!STATIC[s];}
-    fetch('/data/titles-top.json').then(function(r){return r.json();}).then(function(t){t.t.forEach(function(x){if(x[3])STATIC[x[1]]=1;});}).catch(function(){}).then(render);
+    fetch('/data/titles-top.json?v='+DV).then(function(r){return r.json();}).then(function(t){t.t.forEach(function(x){if(x[3])STATIC[x[1]]=1;});}).catch(function(){}).then(render);
   }).catch(function(){});
 };
 function boot(){var c=document.getElementById('job-titles');if(c)window.initJobTitles(c);}
