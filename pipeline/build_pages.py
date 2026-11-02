@@ -191,6 +191,7 @@ for s in sorted(emp_static):
         open(f, 'w').write(t2); changed += 1
 
 # ---------------- every page: nav, theme colors, font preload ----------------
+ADSENSE = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6389116228399687" crossorigin="anonymous"></script>'
 PRELOAD = '<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>'
 SWAP = [('color:#8a93b8', 'color:var(--text2)'), ('background:#67e8f9', 'background:var(--l1)'),
         ('background:#22d3ee', 'background:var(--l2)'), ('background:#818cf8', 'background:var(--l3)'),
@@ -206,6 +207,8 @@ for f in sorted(glob.glob(SITE + '/**/*.html', recursive=True)):
     for a, b in SWAP:
         t = t.replace(a, b)
     t = ver(t)
+    if ADSENSE not in t and '</head>' in t:
+        t = t.replace('</head>', ADSENSE + '</head>', 1)
     if 'href="/style.css"' in t and PRELOAD not in t:
         t = t.replace('<link rel="stylesheet" href="/style.css">', PRELOAD + '<link rel="stylesheet" href="/style.css">', 1)
     if t != t0:
