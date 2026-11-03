@@ -155,6 +155,8 @@ background:var(--card);font-size:14px;color:var(--text);text-decoration:none}
 .lvl-legend{display:flex;gap:.4rem 1.2rem;font-size:13.5px;color:var(--text2);flex-wrap:wrap;margin-bottom:.4rem}
 .lvl-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.35rem}
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.cmp-stats{grid-template-columns:repeat(2,1fr)}
+.cmp-grid h2{min-height:2.4em}
 
 /* footer + disclaimer */
 footer{color:var(--text2);font-size:13px;line-height:1.6;padding:2.5rem 1.25rem 3rem;max-width:1120px;margin:0 auto;border-top:1px solid var(--hairline)}
