@@ -5,7 +5,7 @@ STAMP = 'Data: DOL filings FY2023–FY2026 (through June 2026) · Page updated N
 NAV = ('<nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/titles/">Job titles</a>'
        '<a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>\n'
        '<a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a>'
-       '<a href="/news.html">News</a>'
+       '<a href="/news.html">News</a><a href="/visa-bulletin.html">Visa Bulletin</a>'
        '<a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav>')
 NOTE = ('<div class="note">Estimates from public U.S. Department of Labor records — wages are employer-attested '
         '<em>offered</em> wages, not verified salaries paid; counts are filings, not people. Not legal, financial, '

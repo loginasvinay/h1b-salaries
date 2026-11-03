@@ -49,6 +49,8 @@ a:hover{text-decoration:underline}
 .grid2>.card{margin-bottom:0}
 .grid2{margin-bottom:1.25rem}
 .note{font-size:14px;color:var(--text2);border-left:3px solid var(--hairline);padding:.15rem 0 .15rem 1rem;margin:1.1rem 0;max-width:80ch}
+.highlight{border-left:3px solid var(--accent);padding-left:1rem}
+.archive{line-height:2}
 
 /* figures: a ruled row of numbers, not boxed tiles */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));margin:1.4rem 0;

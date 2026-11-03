@@ -242,6 +242,8 @@ for f in sorted(glob.glob(SITE + '/**/*.html', recursive=True)):
         t = t.replace('<a href="/employers/">Employers</a>', '<a href="/employers/">Employers</a><a href="/titles/">Job titles</a>', 1)
     if '<a href="/perm.html">PERM</a>' in t and 'href="/news.html"' not in t:
         t = t.replace('<a href="/perm.html">PERM</a>', '<a href="/perm.html">PERM</a><a href="/news.html">News</a>', 1)
+    if '<a href="/news.html">News</a>' in t and 'href="/visa-bulletin.html"' not in t:
+        t = t.replace('<a href="/news.html">News</a>', '<a href="/news.html">News</a><a href="/visa-bulletin.html">Visa Bulletin</a>', 1)
     for a, b in SWAP:
         t = t.replace(a, b)
     t = ver(t)

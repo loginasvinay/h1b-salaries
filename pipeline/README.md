@@ -13,6 +13,7 @@ Rebuilds the generated parts of the site from the data shards in `data/`.
 | build_places.py | `data/places.json` (cities + states for search) |
 | build_pages.py | `/title/*.html`, `/titles/`, job-title tables on employer pages, nav, sitemap block |
 | build_news.py | `/news.html` news tab from `data/news/*.json` (H-1B/PERM Federal Register items) |
+| build_visa.py | `/visa-bulletin.html` Visa Bulletin tab (snapshot content, update monthly) |
 | build_cases.py | `data/cases/` compact filings (run only when case data changes) |
 
 News tab refresh: the Federal Register fetch lives in the immigration-news

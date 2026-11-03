@@ -9,4 +9,5 @@ python3 "$SITE/pipeline/build_search.py" "$DB" "$SITE"        # sx/, title-shard
 python3 "$SITE/pipeline/build_places.py" "$SITE"              # places.json
 python3 "$SITE/pipeline/build_pages.py"  "$SITE"              # title pages, employer job-title tables, nav, sitemap
 python3 "$SITE/pipeline/build_news.py"   "$SITE"              # H-1B & PERM news tab (data/news/*.json)
+python3 "$SITE/pipeline/build_visa.py"   "$SITE"              # Visa Bulletin tab (snapshot content, update monthly)
 echo "Build done. Test with: python3 -m http.server 8765 & python3 pipeline/test_site.py http://localhost:8765"
