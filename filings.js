@@ -25,9 +25,9 @@ window.initFilings=function(o){
   var box=document.getElementById('filings-box');
   if(!box||box.dataset.done)return;
   box.dataset.done='1';
-  var rows=null,T=null,L=null,sortCol='recv',sortDir=-1,page=1,PER=50,fy='ALL',lv='ALL',q='',loaded=false;
+  var rows=null,T=null,L=null,sortCol='recv',sortDir=-1,page=1,PER=50,fy='ALL',lv='ALL',q='',qRaw='',loaded=false;
   var pre='';try{pre=new URLSearchParams(location.search).get('t')||'';}catch(e){}
-  if(pre)q=pre.toLowerCase();
+  if(pre){qRaw=pre;q=pre.toLowerCase();}
   box.innerHTML='<p><button class="btn" id="filings-load">Show all '+o.count.toLocaleString()+' filings</button></p><div id="filings-wrap" style="display:none"></div>';
   var wrap=box.querySelector('#filings-wrap'),btn=box.querySelector('#filings-load');
   function load(){
@@ -42,7 +42,7 @@ window.initFilings=function(o){
       wrap.innerHTML='<p>Could not load filings. Please try again.</p>';wrap.style.display='';
     });
   }
-  api.apply=function(title,f){q=String(title||'').toLowerCase();if(f)fy=f;page=1;if(rows)render(false);else load();};
+  api.apply=function(title,f){qRaw=String(title||'');q=qRaw.trim().toLowerCase();if(f)fy=f;page=1;if(rows)render(false);else load();};
   if(api.pending){api.apply.apply(null,api.pending);api.pending=null;}
   btn.addEventListener('click',load);
   if(pre)load();
@@ -68,7 +68,7 @@ window.initFilings=function(o){
     var tabs='<div class="tabs" role="tablist" aria-label="Fiscal year">'+['ALL'].concat(Object.keys(yrs).sort().reverse()).map(function(y){
       return '<button type="button" role="tab" class="tab'+(y===fy?' active':'')+'" aria-selected="'+(y===fy)+'" data-fy="'+y+'">'+(y==='ALL'?'All years':'FY'+y)+'</button>';}).join('')+'</div>';
     var th=function(c,label){return '<th class="sort" tabindex="0" role="button" data-c="'+c+'"'+(sortCol===c?' aria-sort="'+(sortDir>0?'ascending':'descending')+'"':'')+'>'+label+arrow(c)+'</th>';};
-    var h=tabs+'<div class="toolbar"><input class="search slim" id="f-q" placeholder="Filter by job title, city or case number…" aria-label="Filter filings by job title, city or case number" value="'+escH(q)+'">'
+    var h=tabs+'<div class="toolbar"><input class="search slim" id="f-q" placeholder="Filter by job title, city or case number…" aria-label="Filter filings by job title, city or case number" value="'+escH(qRaw)+'">'
       +'<label class="sub">Wage level <select id="f-lv" class="lv-sel" aria-label="Filter by wage level">'+[['ALL','All'],['1','Level I'],['2','Level II'],['3','Level III'],['4','Level IV'],['0','Not stated']].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===lv?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></label>'
       +'<span class="sub">'+filtered.length.toLocaleString()+' filings'+(q?' matching “'+escH(q)+'” <button type="button" class="linkbtn" id="f-clear">clear</button>':'')+'</span></div>'
       +'<div class="tscroll"><table class="dt filings"><thead><tr>'+th('cno','Case number')+th('title','Job title')+th('lvl','Wage level')+th('wage','Base salary')+th('pw','Prevailing wage')+th('loc','Location')+th('recv','Submit date')+th('begin','Start date')+'</tr></thead><tbody>'
@@ -84,10 +84,10 @@ window.initFilings=function(o){
     pg+=' <span class="sub">Page '+page+' of '+pages.toLocaleString()+' · showing '+(filtered.length?start+1:0)+'–'+Math.min(start+PER,filtered.length)+' of '+filtered.length.toLocaleString()+'</span></nav>';
     wrap.innerHTML=h+pg;
     var inp=wrap.querySelector('#f-q');
-    inp.addEventListener('input',function(){q=inp.value.trim().toLowerCase();page=1;render(true);});
+    inp.addEventListener('input',function(){qRaw=inp.value;q=qRaw.trim().toLowerCase();page=1;render(true);});
     if(keepFocus){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
     var lsel=wrap.querySelector('#f-lv');lsel.addEventListener('change',function(){lv=lsel.value;page=1;render(false);});
-    var clr=wrap.querySelector('#f-clear');if(clr)clr.addEventListener('click',function(){q='';page=1;render(false);});
+    var clr=wrap.querySelector('#f-clear');if(clr)clr.addEventListener('click',function(){q='';qRaw='';page=1;render(false);});
     wrap.querySelectorAll('[data-fy]').forEach(function(b){b.addEventListener('click',function(){fy=b.dataset.fy;page=1;render(false);});});
     wrap.querySelectorAll('th[data-c]').forEach(function(t){
       function go(){var c=t.dataset.c;if(sortCol===c)sortDir=-sortDir;else{sortCol=c;sortDir=(c==='wage'||c==='recv'||c==='begin'||c==='pw'||c==='lvl')?-1:1;}page=1;render(false);}

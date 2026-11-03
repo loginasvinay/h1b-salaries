@@ -15,7 +15,7 @@ window.initJobTitles=function(card){
   var slug=card.dataset.slug,box=card.querySelector('#jt-box');
   fetch('/data/emp-titles/'+bucket(slug,NB)+'.json?v='+DV).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){
     var rows=d[slug]||[];if(!rows.length)return;
-    var fy='ALL',q='',all=false,sortK=2,dir=-1;
+    var fy='ALL',q='',qRaw='',all=false,sortK=2,dir=-1;
     var years=FYS.filter(function(y,i){return rows.some(function(r){return r[6][i];});});
     function view(){
       var i=FYS.indexOf(fy);
@@ -31,7 +31,7 @@ window.initJobTitles=function(card){
       var tabs='<div class="tabs" role="tablist" aria-label="Fiscal year">'+['ALL'].concat(years.slice().reverse()).map(function(y){
         return '<button type="button" role="tab" class="tab'+(y===fy?' active':'')+'" aria-selected="'+(y===fy)+'" data-fy="'+y+'">'+(y==='ALL'?'All years':'FY'+y)+'</button>';}).join('')+'</div>';
       function th(k,label){return '<th class="sort" tabindex="0" role="button" data-k="'+k+'"'+(sortK===k?' aria-sort="'+(dir>0?'ascending':'descending')+'"':'')+'>'+label+'</th>';}
-      var h=tabs+'<input class="search slim" id="jt-q" placeholder="Filter job titles…" aria-label="Filter job titles" value="'+escH(q)+'">'
+      var h=tabs+'<input class="search slim" id="jt-q" placeholder="Filter job titles…" aria-label="Filter job titles" value="'+escH(qRaw)+'">'
         +'<div class="tscroll"><table class="dt"><thead><tr>'+th(0,'Job title')+th(2,'Filings')+th(3,'Median salary')+(fy==='ALL'?'<th>Typical range</th>':'')+'<th><span class="sr-only">Filings</span></th></tr></thead><tbody>'
         +shown.map(function(r){
           var name=r.s?'<a href="'+(r.c>=0&&isStatic(r.s)?'/title/'+r.s+'.html':'/title/view.html?t='+r.s)+'">'+escH(r.t)+'</a>':escH(r.t);
@@ -43,7 +43,7 @@ window.initJobTitles=function(card){
       if(!v.length)h+='<p class="sub">No job titles match.</p>';
       box.innerHTML=h;
       var inp=box.querySelector('#jt-q');
-      inp.addEventListener('input',function(){q=inp.value.trim().toLowerCase();render();var n=box.querySelector('#jt-q');n.focus();n.setSelectionRange(n.value.length,n.value.length);});
+      inp.addEventListener('input',function(){qRaw=inp.value;q=qRaw.trim().toLowerCase();render();var n=box.querySelector('#jt-q');n.focus();n.setSelectionRange(n.value.length,n.value.length);});
       box.querySelectorAll('[data-fy]').forEach(function(b){b.addEventListener('click',function(){fy=b.dataset.fy;render();});});
       box.querySelectorAll('th[data-k]').forEach(function(t){
         function go(){var k=+t.dataset.k;if(sortK===k)dir=-dir;else{sortK=k;dir=k===0?1:-1;}render();}
