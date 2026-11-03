@@ -1,5 +1,6 @@
 /* Filings table: one row per certified H-1B case.
-   Columns: Case number | Employer | Job title | Wage level | Base salary | Prevailing wage | Location | Submit date | Start date.
+   Columns: Case number | Job title | Wage level | Base salary | Prevailing wage | Location | Submit date | Start date.
+   (The employer is the page itself, so it is not repeated on every row.)
    Fiscal-year tabs, text filter (job title or city), sortable, 50 rows per page.
    Data: /data/cases/<key>.json  {"T":[titles],"L":["City|ST"],"<slug>":[[t,wage,l,recvDay,beginDay,fy2,case,level,pw]]}
    case: DOL case number packed as digits (20023355584372 -> I-200-23355-584372), 0 when unknown.
@@ -70,9 +71,9 @@ window.initFilings=function(o){
     var h=tabs+'<div class="toolbar"><input class="search slim" id="f-q" placeholder="Filter by job title, city or case number…" aria-label="Filter filings by job title, city or case number" value="'+escH(q)+'">'
       +'<label class="sub">Wage level <select id="f-lv" class="lv-sel" aria-label="Filter by wage level">'+[['ALL','All'],['1','Level I'],['2','Level II'],['3','Level III'],['4','Level IV'],['0','Not stated']].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===lv?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></label>'
       +'<span class="sub">'+filtered.length.toLocaleString()+' filings'+(q?' matching “'+escH(q)+'” <button type="button" class="linkbtn" id="f-clear">clear</button>':'')+'</span></div>'
-      +'<div class="tscroll"><table class="dt filings"><thead><tr>'+th('cno','Case number')+'<th>Employer</th>'+th('title','Job title')+th('lvl','Wage level')+th('wage','Base salary')+th('pw','Prevailing wage')+th('loc','Location')+th('recv','Submit date')+th('begin','Start date')+'</tr></thead><tbody>'
+      +'<div class="tscroll"><table class="dt filings"><thead><tr>'+th('cno','Case number')+th('title','Job title')+th('lvl','Wage level')+th('wage','Base salary')+th('pw','Prevailing wage')+th('loc','Location')+th('recv','Submit date')+th('begin','Start date')+'</tr></thead><tbody>'
       +chunk.map(function(r){
-        return '<tr><td class="cno">'+(r.c||'—')+'</td><td>'+escH(o.name)+'</td><td>'+escH(r.t)+'</td><td class="lv">'+LV[r.v]+'</td><td>'+money(r.w)+'</td><td>'+money(r.p)+'</td><td>'+escH(r.l)+'</td><td>'+dstr(r.r)+'</td><td>'+dstr(r.b)+'</td></tr>';
+        return '<tr><td class="cno">'+(r.c||'—')+'</td><td>'+escH(r.t)+'</td><td class="lv">'+LV[r.v]+'</td><td>'+money(r.w)+'</td><td>'+money(r.p)+'</td><td>'+escH(r.l)+'</td><td>'+dstr(r.r)+'</td><td>'+dstr(r.b)+'</td></tr>';
       }).join('')+'</tbody></table></div>';
     var pg='<nav class="pager" aria-label="Filings pages">';
     function pbtn(p,label,dis){return '<button type="button" class="tab'+(p===page?' active':'')+'" data-p="'+p+'"'+(dis?' disabled':'')+(p===page?' aria-current="page"':'')+'>'+label+'</button>';}

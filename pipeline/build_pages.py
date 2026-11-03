@@ -227,7 +227,8 @@ for s in sorted(emp_static):
 # ---------------- every page: nav, theme colors, font preload ----------------
 ADSENSE = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6389116228399687" crossorigin="anonymous"></script>'
 PRELOAD = '<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin>'
-SWAP = [('color:#8a93b8', 'color:var(--text2)'), ('background:#67e8f9', 'background:var(--l1)'),
+SWAP = [('The table below lists every case — job title, base salary, location, submit date and start date.', 'The table below lists every case — case number, job title, wage level, base salary, prevailing wage, location, submit date and start date.'),
+        ('color:#8a93b8', 'color:var(--text2)'), ('background:#67e8f9', 'background:var(--l1)'),
         ('background:#22d3ee', 'background:var(--l2)'), ('background:#818cf8', 'background:var(--l3)'),
         ('background:#c084fc', 'background:var(--l4)'),
         ('<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">', '<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">'),
