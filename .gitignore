@@ -1,2 +1,3 @@
 site.zip
 *.log
+__pycache__/
