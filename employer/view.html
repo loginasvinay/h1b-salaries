@@ -6,16 +6,16 @@
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
 <meta name="color-scheme" content="only light">
-<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="/style.css?v=07e3d165f4"><link rel="canonical" href="https://h1bsalary.clearinfohub.com/employer/view.html"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://h1bsalary.clearinfohub.com/"}, {"@type": "ListItem", "position": 2, "name": "Employers", "item": "https://h1bsalary.clearinfohub.com/employers/"}, {"@type": "ListItem", "position": 3, "name": "Employer", "item": "https://h1bsalary.clearinfohub.com/employer/view.html"}]}</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6389116228399687" crossorigin="anonymous"></script></head><body>
+<link rel="preload" href="/fonts/instrument-sans.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="/style.css?v=3ec1db1f50"><link rel="canonical" href="https://h1bsalary.clearinfohub.com/employer/view.html"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://h1bsalary.clearinfohub.com/"}, {"@type": "ListItem", "position": 2, "name": "Employers", "item": "https://h1bsalary.clearinfohub.com/employers/"}, {"@type": "ListItem", "position": 3, "name": "Employer", "item": "https://h1bsalary.clearinfohub.com/employer/view.html"}]}</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6389116228399687" crossorigin="anonymous"></script></head><body>
 <a class="skip" href="#main">Skip to content</a>
 <header><div class="wrap"><a class="logo" href="/">H1B <span>Pay Data</span></a>
 <nav><a href="/">Search</a><a href="/employers/">Employers</a><a href="/titles/">Job titles</a><a href="/sponsors.html">Top sponsors</a><a href="/roles/">Roles</a>
 <a href="/cities/">Cities</a><a href="/states/">States</a><a href="/perm.html">PERM</a><a href="/compare.html">Compare</a><a href="/about.html">About the data</a></nav></div></header>
 <div class="wrap" id="main"><div class="card" id="emp-view-card"><div id="emp-view"><p>Loading employer profile…</p></div></div>
-<script src="/filings.js?v=e13aa6b76c"></script><script src="/jt.js?v=2d75d50a85"></script>
+<script src="/filings.js?v=0ea56fdd72"></script><script src="/jt.js?v=b065320fa9"></script><script src="/levels.js?v=d72925beff"></script>
 <script>
 (function(){
-var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
+var DV='2bc740cdd2';/* data version, set by pipeline/build_pages.py */
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 function distBar(p){
@@ -101,6 +101,7 @@ if(!slug){
     h+=scoreCard(e.s);
     h+=distBar(e.p);
     h+=trendSvg(e.q);
+    h+='<div id="wage-levels" data-slug="'+escH(slug)+'"><h3>Wage-level mix</h3><div class="wl-body"><p class="sub">Loading wage levels…</p></div></div>';
     h+='<div class="grid2"><div class="card"><h2>Pay by role</h2><table><tr><th>Role</th><th>Positions</th><th>Median</th></tr>'
       +e.r.map(function(r){return '<tr><td><a href="/role/'+r[0]+'.html">'+escH(r[1])+'</a></td><td>'+r[2].toLocaleString()+'</td><td>'+money(r[3])+'</td></tr>';}).join('')
       +'</table></div><div class="card"><h2>About this profile</h2><p>Full static profile pages exist for the 2,000 largest sponsors. This profile is generated on demand from the same DOL filings data for a smaller sponsor.</p><p><a href="/employers/">Browse all employers →</a></p></div></div>';
@@ -108,6 +109,7 @@ if(!slug){
     box.innerHTML=h;
     initFilings({slug:slug,key:key,name:e.n,count:e.c});
     if(window.initJobTitles)window.initJobTitles(document.getElementById('job-titles'));
+    if(window.initWageLevels)window.initWageLevels(document.getElementById('wage-levels'));
   }).catch(function(){
     box.innerHTML='<h1>Employer profile</h1><p>Could not load this employer profile. Please try again or pick an employer from <a href="/">search</a>.</p>';
   });

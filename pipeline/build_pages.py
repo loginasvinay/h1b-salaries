@@ -24,13 +24,13 @@ for _f in sorted(glob.glob(SITE + '/data/**/*.json', recursive=True)):
     _h.update(_f[len(SITE):].encode()); _h.update(str(os.path.getsize(_f)).encode())
     _h.update(hashlib.sha1(open(_f, 'rb').read()).digest())
 DV = _h.hexdigest()[:10]
-for _a in ['filings.js', 'jt.js', 'title-view.js', 'search.js', 'employer/view.html']:
+for _a in ['filings.js', 'jt.js', 'title-view.js', 'search.js', 'levels.js', 'employer/view.html']:
     _p = f'{SITE}/{_a}'
     _t = open(_p).read()
     _t2 = re.sub(r"var DV='[0-9a-f]*';", f"var DV='{DV}';", _t)
     if _t2 != _t:
         open(_p, 'w').write(_t2)
-ASSETS = ['style.css', 'search.js', 'filings.js', 'jt.js', 'table.js', 'title-view.js']
+ASSETS = ['style.css', 'search.js', 'filings.js', 'jt.js', 'table.js', 'title-view.js', 'levels.js']
 VER = {a: hashlib.sha1(open(f'{SITE}/{a}', 'rb').read()).hexdigest()[:10] for a in ASSETS if os.path.exists(f'{SITE}/{a}')}
 ASSET_RE = re.compile(r'(["\'])/(' + '|'.join(re.escape(a) for a in VER) + r')(?:\?v=[0-9a-f]+)?\1')
 def ver(html):
@@ -189,6 +189,40 @@ for s in sorted(emp_static):
         t2 = t2.replace('<script src="/filings.js"></script>', '<script src="/filings.js"></script><script src="/jt.js" defer></script>')
     if t2 != t:
         open(f, 'w').write(t2); changed += 1
+
+# ---------------- employer pages: wage-level breakdown (all years server-rendered; levels.js adds year tabs) ----------------
+LV = load_dir('emp-levels')
+LNAMES = ['Not stated', 'Level I · Entry', 'Level II · Qualified', 'Level III · Experienced', 'Level IV · Fully competent']
+LCOL = ['var(--hairline)', 'var(--l1)', 'var(--l2)', 'var(--l3)', 'var(--l4)']
+def wl_section(slug):
+    row = (LV.get(slug) or {}).get('ALL') or [0] * 5
+    known = sum(x[0] for i, x in enumerate(row) if i and x)
+    bar = ''.join(f'<div style="width:{x[0] / known * 100:.1f}%;background:{LCOL[i]}" title="{LNAMES[i]}: {x[0]:,}"></div>'
+                  for i, x in enumerate(row) if i and x and known)
+    trs = ''.join(f'<tr><td><i class="lvl-dot" style="background:{LCOL[i]}"></i>{LNAMES[i]}</td><td>{x[0]:,}</td>'
+                  f'<td>{(f"{x[0] / known * 100:.0f}%" if i and known else "—")}</td><td>{money(x[1])}</td></tr>'
+                  for i in (1, 2, 3, 4, 0) for x in [row[i]] if x)
+    return (f'<!--wl:start--><div id="wage-levels" data-slug="{esc(slug)}"><h3>Wage-level mix</h3><div class="wl-body">'
+            f'<div class="lvlbar">{bar}</div><div class="tscroll"><table class="dt"><thead><tr><th>Wage level</th><th>Filings</th>'
+            f'<th>Share</th><th>Median offered</th></tr></thead><tbody>{trs}</tbody></table></div>'
+            '<p class="sub">DOL prevailing-wage levels the employer selected for each filing (Level I = entry, Level IV = fully competent). '
+            'Share excludes filings that state no level.</p></div></div><!--wl:end-->')
+WL_RE = re.compile(r'<!--wl:start-->.*?<!--wl:end-->', re.S)
+OLD_WL = re.compile(r'<h3>Wage-level mix.*?<div class="lvl-legend">.*?</div>', re.S)
+for s in sorted(emp_static):
+    f = f'{SITE}/employer/{s}.html'
+    t0 = t = open(f).read()
+    sec = wl_section(s)
+    if '<!--wl:start-->' in t:
+        t = WL_RE.sub(lambda m: sec, t)
+    elif OLD_WL.search(t):
+        t = OLD_WL.sub(lambda m: sec, t, count=1)
+    else:
+        t = t.replace('<!--jt:end-->', '<!--jt:end-->' + sec, 1)
+    if '/levels.js' not in t:
+        t = re.sub(r'(<script src="/jt\.js[^"]*" defer></script>)', r'\1<script src="/levels.js" defer></script>', t, count=1)
+    if t != t0:
+        open(f, 'w').write(t); changed += 1
 
 # ---------------- every page: nav, theme colors, font preload ----------------
 ADSENSE = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6389116228399687" crossorigin="anonymous"></script>'

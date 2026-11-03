@@ -55,6 +55,15 @@ with sync_playwright() as p:
     cnos = pg.eval_on_selector_all('#filings-wrap td.cno', 'els=>els.map(e=>e.textContent)')
     good = [c for c in cnos if re.fullmatch(r'I-\d{3}-\d{5}-\d{6}', c)]
     check('google: case numbers shown', len(good) >= 45, f'{len(good)}/{len(cnos)} rows')
+    lvs = pg.eval_on_selector_all('#filings-wrap td.lv', 'els=>els.map(e=>e.textContent)')
+    check('google: wage level column', sum(1 for v in lvs if v in ('I', 'II', 'III', 'IV')) >= 30, ' '.join(lvs[:8]))
+    pg.select_option('#f-lv', '1')
+    pg.wait_for_timeout(300)
+    n1 = num(re.search(r'([\d,]+) filings', pg.inner_text('#filings-wrap .toolbar')).group(1))
+    check('google: level filter (Level I = 256)', n1 == 256, str(n1))
+    pg.select_option('#f-lv', 'ALL')
+    wl = pg.inner_text('#wage-levels')
+    check('google: wage-level breakdown with year tabs', '16,282' in wl and 'FY2025' in wl, wl[:80])
 
     # 2. Amazon pagination
     pg.goto(B + '/employer/amazon-com-services-llc-amazon.html')
@@ -96,6 +105,8 @@ with sync_playwright() as p:
     pg.click('#filings-load')
     pg.wait_for_selector('#filings-wrap table', timeout=60000)
     check('cravath: 53 filings', re.search(r'\b53 filings', pg.inner_text('#filings-wrap')) is not None)
+    pg.wait_for_selector('#wage-levels table', timeout=20000)
+    check('cravath: wage-level breakdown', 'Level' in pg.inner_text('#wage-levels'))
 
     # 5. Employer + title deep link
     pg.goto(B + '/employer/google-llc-google.html?t=data%20scientist#filings')

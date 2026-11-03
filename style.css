@@ -218,3 +218,7 @@ td:first-child{min-width:8.5rem}
 .sr-only{clip-path:inset(50%);margin:-1px;padding:0;border:0}
 .filings td.cno{white-space:nowrap;font-size:13.5px;color:var(--text2)}
 .filings td:nth-child(2),.filings td:nth-child(3){white-space:normal;min-width:9rem}
+.lvl-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.45rem;vertical-align:baseline}
+#wage-levels{margin:1.4rem 0}
+.filings td.lv{text-align:center}
+.lv-sel{font:inherit;font-size:14px;padding:.35rem .5rem;margin-left:.3rem;border:1px solid var(--hairline);border-radius:8px;background:var(--card);color:var(--text)}

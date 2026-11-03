@@ -3,7 +3,7 @@
    [title, titleSlug, filings, median, min, max, [[c,med]|0 per FY2023..FY2026]]. */
 (function(){
 'use strict';
-var DV='f4b4bf6108';/* data version, set by pipeline/build_pages.py */
+var DV='2bc740cdd2';/* data version, set by pipeline/build_pages.py */
 var FYS=['2023','2024','2025','2026'],NB=512,STATIC_T=200;
 function bucket(s,n){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}

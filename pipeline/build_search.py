@@ -21,6 +21,14 @@ def stats(v):
 c=sqlite3.connect(DB)
 emp={s:(n,cnt) for s,n,cnt in c.execute('select slug,name,cnt from emp')}
 static_emp={os.path.basename(f)[:-5] for f in glob.glob(SITE+'/employer/*.html')}-{'view'}
+# ---- wage-level breakdown per employer: /data/emp-levels/<bucket>.json
+#      slug -> {"ALL": [[count, median] x 5 levels (0 = not stated, 1-4 = Level I-IV)], "<fy>": [...]}
+EL=collections.defaultdict(lambda:collections.defaultdict(lambda:collections.defaultdict(list)))
+cols=[r[1] for r in c.execute('pragma table_info(cases)')]
+if 'lvl' in cols:
+    for s,w,fy,lv in c.execute('select slug,wage,fy,lvl from cases'):
+        lv=lv or 0
+        EL[s]['ALL'][lv].append(w); EL[s][fy][lv].append(w)
 # ---- pass over cases
 T_w=collections.defaultdict(list); T_var=collections.defaultdict(collections.Counter)
 T_fy=collections.defaultdict(lambda:collections.defaultdict(list))
@@ -64,6 +72,11 @@ for s,tt in E_t.items():
     ED[bucket(s,NB_E)][s]=rows
 p=outdir('emp-titles')
 for k,d in ED.items(): json.dump(d,open(f'{p}/{k}.json','w'),separators=(',',':'),sort_keys=True)
+LD=collections.defaultdict(dict)
+for s,per in EL.items():
+    LD[bucket(s,NB_E)][s]={k:[[len(v[i]),stats(v[i])[2]] if v.get(i) else 0 for i in range(5)] for k,v in sorted(per.items())}
+p=outdir('emp-levels')
+for k,d in LD.items(): json.dump(d,open(f'{p}/{k}.json','w'),separators=(',',':'),sort_keys=True)
 # ---- search index: token-prefix shards. entry = [type, name, slug, count, median, static]
 SX=collections.defaultdict(list)
 def toks(name): return [w for w in re.findall(r'[a-z0-9]+',name.lower()) if w not in STOP and len(w)>=2]
