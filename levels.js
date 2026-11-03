@@ -3,7 +3,7 @@
    index 0 = level not stated, 1-4 = DOL prevailing-wage Level I-IV. */
 (function(){
 'use strict';
-var DV='2bc740cdd2';/* data version, set by pipeline/build_pages.py */
+var DV='a841fd90e9';/* data version, set by pipeline/build_pages.py */
 var NAMES=['Not stated','Level I · Entry','Level II · Qualified','Level III · Experienced','Level IV · Fully competent'];
 var COLORS=['var(--hairline)','var(--l1)','var(--l2)','var(--l3)','var(--l4)'];
 function bucket(s,n){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
