@@ -80,8 +80,10 @@ function setupPair(tab,sa,sb,ra,rb){
     let upd=()=>{document.getElementById(ra).innerHTML=card(d[A.value],tab);
                  document.getElementById(rb).innerHTML=card(d[B.value],tab);};
     A.onchange=upd;B.onchange=upd;upd();
+    paired[tab]=true;
   });
 }
+let paired={};
 setupPair('emp','a','b','ra','rb');
 let offerReady=false;
 document.getElementById('tabs').addEventListener('click',ev=>{
@@ -91,9 +93,9 @@ document.getElementById('tabs').addEventListener('click',ev=>{
   let tab=btn.dataset.tab;
   document.querySelectorAll('.tabpane').forEach(p=>p.style.display='none');
   document.getElementById('pane-'+tab).style.display='';
-  if(tab==='role'&&!cache.role)setupPair('role','a2','b2','ra2','rb2');
-  if(tab==='city'&&!cache.city)setupPair('city','a3','b3','ra3','rb3');
-  if(tab==='state'&&!cache.state)setupPair('state','a4','b4','ra4','rb4');
+  if(tab==='role'&&!paired.role)setupPair('role','a2','b2','ra2','rb2');
+  if(tab==='city'&&!paired.city)setupPair('city','a3','b3','ra3','rb3');
+  if(tab==='state'&&!paired.state)setupPair('state','a4','b4','ra4','rb4');
   if(tab==='offer'&&!offerReady){
     Promise.all([load('role'),load('state'),load('emp')]).then(([R,St,E])=>{
       document.getElementById('o-role').innerHTML=Object.entries(R).sort((a,b)=>b[1].c-a[1].c)
