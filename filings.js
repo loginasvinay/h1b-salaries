@@ -8,7 +8,7 @@
    or right away when the URL carries ?t=<job title>. */
 (function(){
 'use strict';
-var DV='a841fd90e9';/* data version, set by pipeline/build_pages.py */
+var DV='2bc740cdd2';/* data version, set by pipeline/build_pages.py */
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
 var EPOCH=Date.UTC(2000,0,1);

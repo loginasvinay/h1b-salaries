@@ -21,6 +21,8 @@ import hashlib
 # var DV='...'; fetches append ?v=DV, so a data refresh is never hidden behind a browser cache.
 _h = hashlib.sha1()
 for _f in sorted(glob.glob(SITE + '/data/**/*.json', recursive=True)):
+    if _f.startswith(SITE + '/data/news/'):
+        continue  # build-time input only (rendered into news.html); never fetched by a script, so a news refresh must not bump DV
     _h.update(_f[len(SITE):].encode()); _h.update(str(os.path.getsize(_f)).encode())
     _h.update(hashlib.sha1(open(_f, 'rb').read()).digest())
 DV = _h.hexdigest()[:10]

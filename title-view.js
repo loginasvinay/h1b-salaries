@@ -2,7 +2,7 @@
    /data/title-shards/<fnv1a(slug)%256>.json. Never navigates away on a miss. */
 (function(){
 'use strict';
-var DV='a841fd90e9';/* data version, set by pipeline/build_pages.py */
+var DV='2bc740cdd2';/* data version, set by pipeline/build_pages.py */
 function bucket(s,n){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h%n;}
 function escH(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function money(v){return v==null?'—':'$'+Math.round(v).toLocaleString();}
