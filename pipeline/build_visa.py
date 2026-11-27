@@ -57,17 +57,17 @@ def main():
   <p><a class="btn" href="{DOS}" rel="noopener">Open the official Visa Bulletin</a></p>
 </div>
 <div class="card highlight">
-  <h2>November 2026 &mdash; key movements</h2>
+  <h2>December 2026 &mdash; key movements</h2>
   <p><strong>Employment-based (Final Action Dates):</strong></p>
   <ul>
-    <li><strong>EB-1:</strong> China advances to Aug 1, 2023; India holds at Feb 1, 2023; all others current.</li>
-    <li><strong>EB-2:</strong> India holds at Nov 1, 2013; China holds at Oct 1, 2021; rest of world advances 3 months to Apr 1, 2025.</li>
-    <li><strong>EB-3:</strong> India advances 3 weeks to Jan 22, 2014; China advances 2 weeks to Jan 22, 2022; rest of world advances to Jun 15, 2024.</li>
-    <li><strong>EB-5 Unreserved:</strong> India holds at Dec 1, 2023; China at Dec 1, 2016.</li>
+    <li><strong>EB-1:</strong> holds everywhere &mdash; China Aug 1, 2023; India Feb 1, 2023; all others current.</li>
+    <li><strong>EB-2:</strong> holds &mdash; India Nov 1, 2013; China Oct 1, 2021; rest of world Apr 1, 2025.</li>
+    <li><strong>EB-3:</strong> holds &mdash; India Jan 22, 2014; China Jan 22, 2022; rest of world Jun 15, 2024.</li>
+    <li><strong>EB-5 Unreserved:</strong> China advances 1 month to Jan 1, 2017; India holds at Dec 1, 2023.</li>
   </ul>
-  <p><strong>Family-based (Final Action Dates):</strong> F2A inches 1 month to Oct 22, 2026; F1, F2B, F3, and F4 jump 12 months each (F1 to Jan 22, 2021; F2B to Aug 22, 2020; F3 to Oct 22, 2015; F4 to Oct 22, 2012). No retrogressions anywhere.</p>
-  <p><strong>Filing chart:</strong> USCIS confirms applicants use the <em>Dates for Filing</em> chart for November 2026. For India, Dates for Filing are far more generous: EB-1 Jul 1, 2024; EB-2 Jan 15, 2015; EB-3 Jan 15, 2015.</p>
-  <p class="note">Source: U.S. Department of State, November 2026 Visa Bulletin (released Oct 22, 2026).</p>
+  <p><strong>Family-based (Final Action Dates):</strong> F2A advances 1 month to Nov 22, 2026 (Mexico to May 22, 2026); F1, F2B, F3, and F4 hold. No retrogressions anywhere.</p>
+  <p><strong>Filing chart:</strong> USCIS confirms applicants use the <em>Dates for Filing</em> chart for December 2026 (both family- and employment-based). The December Dates for Filing are unchanged from November: for India, EB-1 Jul 1, 2024; EB-2 Jan 15, 2015; EB-3 Jan 15, 2015; EB-5 China Mar 1, 2021, India May 1, 2024.</p>
+  <p class="note">Source: U.S. Department of State, December 2026 Visa Bulletin No. 21, Vol. XI (CA/VO: Nov 13, 2026; published Nov 27, 2026); USCIS Adjustment of Status Filing Charts. The bulletin also warns the Certain Religious Workers category expires Dec 11, 2026 unless Congress extends it, and that retrogression may be needed in coming months if demand rises.</p>
 </div>
 <h2>How to read it</h2>
 <div class="grid2">
@@ -79,7 +79,7 @@ def main():
 {items}</ul>
 <p class="note">Full cutoff-date tables are coming in a later version of this tab. For now, always use the official bulletin linked above as the source of truth.</p>"""
     h = page('/visa-bulletin.html', 'Visa Bulletin — Final Action Dates & Dates for Filing',
-             'Monthly Visa Bulletin explainer, November 2026 key movements, archive, and how to read Final Action Dates vs Dates for Filing.',
+             'Monthly Visa Bulletin explainer, December 2026 key movements, archive, and how to read Final Action Dates vs Dates for Filing.',
              [('Home', '/'), ('Visa Bulletin', '/visa-bulletin.html')], body)
     out = SITE + '/visa-bulletin.html'
     text = mini(ver(h))
